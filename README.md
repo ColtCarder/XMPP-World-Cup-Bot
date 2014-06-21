@@ -9,6 +9,8 @@ Blather
 Rest-Client
 JSON
 
+Getting Started
+---
 Replace Username/Password
 
 Run bot from command line with ruby GOAL.rb
