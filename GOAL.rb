@@ -2,11 +2,15 @@ require 'blather/client/dsl'
 require 'rest_client'
 require 'json'
 require 'time'
+require_relative 'inc.rb'
 
 class GoalBot
-	 extend Blather::DSL
+	extend Blather::DSL
 	def self.run
-        setup 'username', 'password'
+        inc = Inc.new
+        username = inc.username()
+        password = inc.password()
+        setup username,password 
 		print "Connected to #{jid.stripped}\nThis is the GOAL Bot\n"
 		EM.run { client.run }
 	end
