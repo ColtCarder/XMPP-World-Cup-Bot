@@ -137,11 +137,6 @@ class GoalBot
         say m.from, "==========="
     end
     counter = 0
-    message :chat?, :body => "!tellrachelthatshesmells" do |m|
-        say "24006_474925@chat.hipchat.com/osx", "You Smell!"
-        counter = counter + 1
-        puts "#{counter} people have said rachel smells today!"
-    end
 	disconnected { client.connect }
 end
 
