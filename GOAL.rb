@@ -125,7 +125,7 @@ class GoalBot
         end
     end
     message :chat?, :body => "!help" do |m|
-        puts m.from
+        puts "Sending commands to #{m.from}"
         say m.from, "==COMMANDS=="
         sleep(1)
         say m.from, "!today - Return todays matches/scores"
@@ -134,9 +134,28 @@ class GoalBot
         sleep(1)
         say m.from, "!goal - Get live events from the current game"
         sleep(1)
+        say m.from, "!group X - Get group rankings and information"
         say m.from, "==========="
     end
-    counter = 0
+
+    message :chat?, :body => /(!group)( )\b([a-hA-H])\b/ do |m|
+       var = m.body.to_s.split(" ")[1].upcase
+       response = RestClient.get "http://worldcup.sfg.io/teams/results", {:accept => :json}
+       response = JSON.parse(response)
+       counter = 1
+       puts "Sending group #{var} stats to #{m.from}"
+       response.each do |x|
+           if x['group_letter'] == var
+               say m.from, "#{x["country"]} Rank ##{counter} Wins: #{x["wins"]} Losses: #{x["losses"]} Draws: #{x["draws"]} Games Played: #{x["games_played"]} Goals Scored: #{x["goals_for"]} Goals Scored Against: #{x["goals_against"]} Goal Difference: #{x["goal_differential"]}"
+               counter = counter + 1
+               sleep(1)
+           end
+       end
+    end
+    message :chat?, :body => /^!/ do |m|
+        puts "#{m.from} tried an invalid command."
+        say m.from, "Invalid Command. :( Try !help"
+    end
 	disconnected { client.connect }
 end
 
