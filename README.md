@@ -1,7 +1,9 @@
 XMPP-World-Cup-Bot
 ==================
 
-World Cup Bot
+World Cup Bot is an XMPP bot that will use the http://worldcup.sfg.io/ API in order to give real time events during
+
+world cup games as well as games based on team, and day.
 
 Requirements
 ---
