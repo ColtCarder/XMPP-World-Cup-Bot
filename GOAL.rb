@@ -11,6 +11,9 @@ class GoalBot
 		EM.run { client.run }
 	end
 
+    def get_time(time)
+    end
+
     users = []
     home_cache = ''
     away_cache = ''
@@ -31,10 +34,11 @@ class GoalBot
                 sleep(3)
                 response = RestClient.get 'http://worldcup.sfg.io/matches/current', {:accept => :json}
                 if response == "[]"
-                    say threadUser, "No current game."
+                    say threadUser, "No current game. Try again later."
                     users.delete(threadUser)
+                    puts "Thread stopped for #{threadUser}\n"
+                    Thread.stop
                     break
-
                 end
                 
                 response = JSON.parse(response)
@@ -79,7 +83,9 @@ class GoalBot
         response = RestClient.get 'http://worldcup.sfg.io/matches/today', {:accept => :json}
         response = JSON.parse(response)
         response.each do |x|
-            match = "#{x["home_team"]["country"]} (#{x["home_team"]["code"]}) vs. #{x["away_team"]["country"]} (#{x["away_team"]["code"]}) Match Status: #{x["status"]}"
+            parse_time = Time.parse(x["datetime"]) + Time.zone_offset('EDT')
+            time = parse_time.strftime("%I:%M %p")
+            match = "#{x["home_team"]["country"]} (#{x["home_team"]["code"]}) vs. #{x["away_team"]["country"]} (#{x["away_team"]["code"]}) Match Status: #{x["status"]} | Match Time: #{time}"
             say m.from, match
             sleep(1)
             if x["status"] == "completed"
@@ -92,12 +98,13 @@ class GoalBot
 
     message :chat?, :body => /(!team)( )\b([a-zA-Z][a-zA-Z][a-zA-Z])\b/ do |m|
         var = m.body.to_s.split(" ")[1].upcase
-        puts var
         begin
         response = RestClient.get "http://worldcup.sfg.io/matches/country?fifa_code=#{var}", {:accept => :json}
         response = JSON.parse(response)
         response.each do |x|
-            match = "#{x["home_team"]["country"]} (#{x["home_team"]["code"]}) vs. #{x["away_team"]["country"]} (#{x["away_team"]["code"]}) Match Status: #{x["status"]}"
+            parse_time = Time.parse(x["datetime"]) + Time.zone_offset('EDT')
+            time = parse_time.strftime("%A %B %e, %I:%M %p")
+            match = "#{x["home_team"]["country"]} (#{x["home_team"]["code"]}) vs. #{x["away_team"]["country"]} (#{x["away_team"]["code"]}) Match Status: #{x["status"]} | Match Time: #{time}"
             say m.from, match
             puts "Saying #{match}"
             sleep(1)
@@ -125,7 +132,11 @@ class GoalBot
         sleep(1)
         say m.from, "==========="
     end
-    message :chat?, :body do |m|
+    counter = 0
+    message :chat?, :body => "!tellrachelthatshesmells" do |m|
+        say "24006_474925@chat.hipchat.com/osx", "You Smell!"
+        counter = counter + 1
+        puts "#{counter} people have said rachel smells today!"
     end
 	disconnected { client.connect }
 end
