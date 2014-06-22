@@ -19,8 +19,6 @@ class GoalBot
     end
 
     users = []
-    home_cache = ''
-    away_cache = ''
 	message :chat?, :body => "!goal" do |m|
         unless users.include?(m.from.to_s)
         say m.from, "You've been added to the event watcher!"
@@ -28,6 +26,8 @@ class GoalBot
         threadName = m.from.to_s
         threadName = Thread.new do
             threadUser = m.from.to_s
+            home_cache = ''
+            away_cache = ''
             print "Thread started for #{threadUser}\n"
             start = 0
             start2 = 0
@@ -35,6 +35,7 @@ class GoalBot
                 finalMessage = ''
                 finalMessage2 = ''
                 threadUser = m.from.to_s
+                print "#{threadUser}\n"
                 sleep(3)
                 response = RestClient.get 'http://worldcup.sfg.io/matches/current', {:accept => :json}
                 if response == "[]"
@@ -51,15 +52,17 @@ class GoalBot
                     home_cache = response.first["home_team_events"]
                     home_cache.each do |x|
                       say threadUser, "#{response.first["home_team"]["country"]}| Event: #{x["type_of_event"]} | Player: #{x["player"]} | Time: #{x["time"]}"
+                      sleep(1)
                       puts "Sending home to #{threadUser}"
                     end
                     start = 1
                     else
+                      home_cache = response.first["home_team_events"]
                       home_cache.each do |x|
                           finalMessage = "#{response.first["home_team"]["country"]}| Event: #{x["type_of_event"]} | Player: #{x["player"]} | Time: #{x["time"]}"
                       end
+                      puts "Sending #{finalMessage} to #{threadUser}"
                       say threadUser, "#{finalMessage}"
-                      home_cache = response.first["home_team_events"]
                     end
                 end
                 if away_cache != response.first["away_team_events"] or start2 == 0
@@ -67,15 +70,17 @@ class GoalBot
                     away_cache = response.first["away_team_events"]
                     away_cache.each do |x|
                       say threadUser, "#{response.first["away_team"]["country"]}| Event: #{x["type_of_event"]} | Player: #{x["player"]} | Time: #{x["time"]}"
+                      sleep(1)
                       puts "Sending away to #{threadUser}"
                     end
                     start2 = 1
                     else
+                       away_cache = response.first["away_team_events"]
                        away_cache.each do |x|
                         finalMessage2 = "#{response.first["away_team"]["country"]}| Event: #{x["type_of_event"]} | Player: #{x["player"]} | time: #{x["time"]}"
                        end
+                       puts "Sending #{finalMessage2} to #{threadUser}"
                        say threadUser, "#{finalMessage2}"
-                       away_cache = response.first["away_team_events"]
                     end
                 end
 
