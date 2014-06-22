@@ -35,7 +35,6 @@ class GoalBot
                 finalMessage = ''
                 finalMessage2 = ''
                 threadUser = m.from.to_s
-                print "#{threadUser}\n"
                 sleep(3)
                 response = RestClient.get 'http://worldcup.sfg.io/matches/current', {:accept => :json}
                 if response == "[]"
