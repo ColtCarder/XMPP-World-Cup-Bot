@@ -39,7 +39,7 @@ class GoalBot
                 sleep(3)
                 response = RestClient.get 'http://worldcup.sfg.io/matches/current', {:accept => :json}
                 if response == "[]"
-                    say threadUser, "No current game. Try again later."
+                   say threadUser, "No current game. Try again later."
                     users.delete(threadUser)
                     puts "Thread stopped for #{threadUser}\n"
                     Thread.stop
@@ -167,6 +167,7 @@ class GoalBot
     message :chat?, :body => "!score" do |m|
         response = RestClient.get 'http://worldcup.sfg.io/matches/current', {:accept => :json}
         if response == "[]"
+           puts "#{m.from.to_s} asked for the score, but there is no current game."
            say m.from, "No current game. Try again later."
         else
         response = JSON.parse(response)
