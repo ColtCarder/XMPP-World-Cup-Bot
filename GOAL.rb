@@ -11,7 +11,7 @@ class GoalBot
         username = inc.username()
         password = inc.password()
         setup username,password 
-		print "Connected to #{jid.stripped}\nThis is the GOAL Bot\n"
+		print "Connected to #{jid.stripped}\nGOAL Bot Initialized\n"
 		EM.run { client.run }
 	end
 
@@ -59,6 +59,7 @@ class GoalBot
                           finalMessage = "#{response.first["home_team"]["country"]}| Event: #{x["type_of_event"]} | Player: #{x["player"]} | Time: #{x["time"]}"
                       end
                       say threadUser, "#{finalMessage}"
+                      home_cache = response.first["home_team_events"]
                     end
                 end
                 if away_cache != response.first["away_team_events"] or start2 == 0
@@ -74,6 +75,7 @@ class GoalBot
                         finalMessage2 = "#{response.first["away_team"]["country"]}| Event: #{x["type_of_event"]} | Player: #{x["player"]} | time: #{x["time"]}"
                        end
                        say threadUser, "#{finalMessage2}"
+                       away_cache = response.first["away_team_events"]
                     end
                 end
 
@@ -140,15 +142,17 @@ class GoalBot
 
     message :chat?, :body => /(!group)( )\b([a-hA-H])\b/ do |m|
        var = m.body.to_s.split(" ")[1].upcase
-       response = RestClient.get "http://worldcup.sfg.io/teams/results", {:accept => :json}
+       response = RestClient.get "http://worldcup.sfg.io/teams/group_results", {:accept => :json}
        response = JSON.parse(response)
        counter = 1
        puts "Sending group #{var} stats to #{m.from}"
        response.each do |x|
-           if x['group_letter'] == var
-               say m.from, "#{x["country"]} Rank ##{counter} Wins: #{x["wins"]} Losses: #{x["losses"]} Draws: #{x["draws"]} Games Played: #{x["games_played"]} Goals Scored: #{x["goals_for"]} Goals Scored Against: #{x["goals_against"]} Goal Difference: #{x["goal_differential"]}"
-               counter = counter + 1
-               sleep(1)
+           if x['group']['letter'] == var
+               x['group']['teams'].each do |y|
+                    say m.from, "Rank ##{counter}) #{y['team']['country']} (#{y['team']['fifa_code']}) | Points: #{y['team']['points']} Goal Difference #{y['team']['goal_differential']}"
+                    sleep(1)
+                    counter = counter + 1
+               end
            end
        end
     end
