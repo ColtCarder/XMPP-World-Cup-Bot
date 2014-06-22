@@ -168,10 +168,11 @@ class GoalBot
         response = RestClient.get 'http://worldcup.sfg.io/matches/current', {:accept => :json}
         if response == "[]"
            say m.from, "No current game. Try again later."
-        end 
+        else
         response = JSON.parse(response)
         say m.from, "#{response.first["home_team"]["country"]}: #{response.first["home_team"]["goals"]} vs. #{response.first["away_team"]["country"]}: #{response.first["away_team"]["goals"]}"
         puts "Sending score to #{m.from.to_s}"
+        end
         sleep(1)
     end
     message :chat?, :body => /^!/ do |m|
