@@ -18,6 +18,7 @@ class GoalBot
     def get_time(time)
     end
 
+
     users = []
 	message :chat?, :body => "!goal" do |m|
         unless users.include?(m.from.to_s)
@@ -141,6 +142,9 @@ class GoalBot
         say m.from, "!goal - Get live events from the current game"
         sleep(1)
         say m.from, "!group X - Get group rankings and information"
+        sleep(1)
+        say m.from, "!score - Get current score if there is a game in progress"
+        sleep(1)
         say m.from, "==========="
     end
 
@@ -160,9 +164,18 @@ class GoalBot
            end
        end
     end
+    message :chat?, :body => "!score" do |m|
+        response = RestClient.get 'http://worldcup.sfg.io/matches/current', {:accept => :json}
+        if response == "[]"
+           say threadUser, "No current game. Try again later."
+        end 
+        response = JSON.parse(response)
+        say m.from, "#{response.first["home_team"]["country"]}: #{response.first["home_team"]["goals"]} vs. #{response.first["away_team"]["country"]}: #{response.first["away_team"]["goals"]}"
+        sleep(1)
+    end
     message :chat?, :body => /^!/ do |m|
-        puts "#{m.from} tried an invalid command."
-        say m.from, "Invalid Command. :( Try !help"
+            puts "#{m.from} tried an invalid command."
+            say m.from, "Invalid Command. :( Try !help"
     end
 	disconnected { client.connect }
 end
