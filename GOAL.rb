@@ -91,6 +91,7 @@ class GoalBot
 	end
 
     message :chat?, :body => "!today" do |m|
+        puts "#{m.from} asked for Today's Matches"
         response = RestClient.get 'http://worldcup.sfg.io/matches/today', {:accept => :json}
         response = JSON.parse(response)
         response.each do |x|
