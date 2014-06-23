@@ -86,7 +86,7 @@ class GoalBot
 
             end
         end
-        threadName.join
+    #    threadName.join
         end
 	end
 
@@ -147,6 +147,7 @@ class GoalBot
         say m.from, "!score - Get current score if there is a game in progress"
         sleep(1)
         say m.from, "==========="
+        sleep(1)
     end
 
     message :chat?, :body => /(!group)( )\b([a-hA-H])\b/ do |m|
@@ -176,10 +177,6 @@ class GoalBot
         puts "Sending score to #{m.from.to_s}"
         end
         sleep(1)
-    end
-    message :chat?, :body => /^!/ do |m|
-            puts "#{m.from} tried an invalid command."
-            say m.from, "Invalid Command. :( Try !help"
     end
 	disconnected { client.connect }
 end
