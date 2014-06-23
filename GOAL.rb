@@ -36,6 +36,7 @@ class GoalBot
                 finalMessage = ''
                 finalMessage2 = ''
                 threadUser = m.from.to_s
+                puts "Running for #{threadUser}"
                 sleep(3)
                 response = RestClient.get 'http://worldcup.sfg.io/matches/current', {:accept => :json}
                 if response == "[]"
@@ -52,7 +53,7 @@ class GoalBot
                     home_cache = response.first["home_team_events"]
                     home_cache.each do |x|
                       say threadUser, "#{response.first["home_team"]["country"]}| Event: #{x["type_of_event"]} | Player: #{x["player"]} | Time: #{x["time"]}"
-                      sleep(1)
+                      Kernel.sleep(1)
                       puts "Sending home to #{threadUser}"
                     end
                     start = 1
@@ -86,7 +87,7 @@ class GoalBot
 
             end
         end
-    #    threadName.join
+        threadName.join
         end
 	end
 
