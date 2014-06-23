@@ -87,7 +87,7 @@ class GoalBot
 
             end
         end
-        threadName.join
+#        threadName.join
         end
 	end
 
